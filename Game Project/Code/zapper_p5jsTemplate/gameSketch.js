@@ -1,6 +1,6 @@
 var state=0; //state of game: 0-welcome, 1-game, 2-endscreen
 var bugX, bugY, bugWidth=30, halfBugWidth=bugWidth/2, bugSpeed=10;
-var playerX, playerY, playerWidth=30, playerSpeed =2;
+var playerX, playerY, playerWidth=30, halfPlayerWidth=playerWidth/2, playerSpeed=halfBugWidth;
 var score=0, lives =3;
 
 
@@ -25,12 +25,43 @@ function setup() {
 
 function draw() {
   background(0);
-  text("Score: "+score, 50,50);
   if (frameCount % 25 == 0){
     moveBug();
   }
   drawBug();
+  //ellipse(bugX, bugY, 20,20);
   drawPlayer();
+  //ellipse(playerX, playerY, 20,20);
+
+
+  if(keyIsDown(LEFT_ARROW)){
+    if(playerX>playerWidth){
+      playerX-=playerSpeed;
+    }    
+    console.log("LEFT");
+  }
+  else if(keyIsDown(RIGHT_ARROW)){
+    if(playerX<width-playerWidth){
+      playerX+=playerSpeed;
+    }
+    console.log("RIGHT");
+  }
+  else if(keyIsDown(UP_ARROW)){
+    console.log("FIRE"); //TODO: Better laser/ missile launch
+    if((playerX > (bugX-halfBugWidth)) && (playerX < (bugX+halfBugWidth))){
+      line(playerX+halfPlayerWidth, playerY, playerX+halfPlayerWidth, bugY+20); //laser to bug
+      score+=1;
+      resetBug();
+    }
+    else{
+      line(playerX+halfPlayerWidth, playerY, playerX+halfPlayerWidth, 0);; //laser miss
+
+    }
+  }
+
+  text("Score: "+score, 50,50);
+  text("Lives: "+lives, 50, 100);
+
 }
 
 function drawBug()
@@ -52,22 +83,25 @@ function drawBug()
 }
 
 function moveBug(){
-
-  if(bugX < width-bugWidth){
-    bugX += random(-width/20, width/20); 
-  }else{
-    bugX-= bugWidth;
-  }
-  
-  if(bugX > bugWidth){
-    bugX += random(-width/20, width/20); 
-    //TODO: move bug in more complex way/ with pattern
+  var moveAmt = 0;
+  //choose a random direction to move
+  if(random(1.0)>0.5){
+    moveAmt = -halfBugWidth;
   }
   else{
-    bugX+= bugWidth;
+   moveAmt = halfBugWidth; 
   }
-
-
+ //check if bug is going off canvas, and nudge back
+  if(bugX > width-bugWidth){
+    bugX -= bugWidth; 
+  }
+  else if(bugX < bugWidth){
+    bugX += bugWidth; 
+  }
+  else{
+    bugX += moveAmt; //move bug
+  }
+  //check if bug reaches player
   if(bugY < playerY)
   {
     bugY += bugSpeed;
@@ -78,10 +112,9 @@ function moveBug(){
       lives-=1;
     }
     else{
-      state=3;
-    }
-    
-  }
+      state=3; //game over, maaan
+    } 
+}
 }
 
 function resetBug(){
@@ -103,14 +136,13 @@ function drawPlayer(){
 
 }
 
-function movePlayer(){
 
-
-
-}
-
-function keypressed(){
-  console.write(key);
-}
+// function keyPressed(){
+//   console.log(key);
+//   if(keyCode==UP_ARROW){
+//     console.log("FIRE");
+//     fire(playerX);
+//   }
+// }
 
 
