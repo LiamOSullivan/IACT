@@ -4,6 +4,12 @@ var playerX, playerY, playerWidth=30, halfPlayerWidth=playerWidth/2, playerSpeed
 var score=0, lives =3;
 
 
+function preload() {
+  zapSound = loadSound("sounds/Laser_Shoot.wav");
+  splosion = loadSound("sounds/Explosion2.wav");
+  die = loadSound("sounds/die.wav");
+}
+
 function setup() {
   createCanvas(1200, 600);
   background(0);
@@ -19,8 +25,8 @@ function setup() {
   playerY = height-50;
   resetBug();
   playerX=width/2;
-  playerY=height-50;
-
+  playerY=height-50
+  //song.loop(); // song is ready to play during setup() because it was loaded during preload
 }
 
 function draw() {
@@ -29,10 +35,7 @@ function draw() {
     moveBug();
   }
   drawBug();
-  //ellipse(bugX, bugY, 20,20);
   drawPlayer();
-  //ellipse(playerX, playerY, 20,20);
-
 
   if(keyIsDown(LEFT_ARROW)){
     if(playerX>playerWidth){
@@ -50,17 +53,22 @@ function draw() {
     console.log("FIRE"); //TODO: Better laser/ missile launch
     if((playerX > (bugX-halfBugWidth)) && (playerX < (bugX+halfBugWidth))){
       line(playerX+halfPlayerWidth, playerY, playerX+halfPlayerWidth, bugY+20); //laser to bug
+      if( !splosion.isPlaying() ){
+        splosion.play();
+      }
       score+=1;
       resetBug();
     }
     else{
       line(playerX+halfPlayerWidth, playerY, playerX+halfPlayerWidth, 0);; //laser miss
-
     }
-  }
+    if( !zapSound.isPlaying() ){
+     zapSound.play();
+   }
+ }
 
-  text("Score: "+score, 50,50);
-  text("Lives: "+lives, 50, 100);
+ text("Score: "+score, 50,50);
+ text("Lives: "+lives, 50, 100);
 
 }
 
@@ -90,15 +98,15 @@ function moveBug(){
   }
   else{
    moveAmt = halfBugWidth; 
-  }
+ }
  //check if bug is going off canvas, and nudge back
-  if(bugX > width-bugWidth){
-    bugX -= bugWidth; 
-  }
-  else if(bugX < bugWidth){
-    bugX += bugWidth; 
-  }
-  else{
+ if(bugX > width-bugWidth){
+  bugX -= bugWidth; 
+}
+else if(bugX < bugWidth){
+  bugX += bugWidth; 
+}
+else{
     bugX += moveAmt; //move bug
   }
   //check if bug reaches player
@@ -110,11 +118,13 @@ function moveBug(){
     resetBug();
     if(lives>0){
       lives-=1;
-    }
-    else{
+      if( !die.isPlaying() ){
+        die.play();}
+      }
+      else{
       state=3; //game over, maaan
     } 
-}
+  }
 }
 
 function resetBug(){
