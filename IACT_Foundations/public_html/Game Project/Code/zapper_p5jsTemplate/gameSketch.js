@@ -7,7 +7,7 @@ var score=0, lives =3;
 function preload() {
   zapSound = loadSound("sounds/Laser_Shoot.wav");
   splosion = loadSound("sounds/Explosion2.wav");
-  die = loadSound("sounds/die.wav");
+  die = loadSound("sounds/Die.wav");
 }
 
 function setup() {
